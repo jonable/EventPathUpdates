@@ -1,0 +1,58 @@
+{% load url from future %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Changes To Event Notes</title>
+    <style type="text/css">
+        .diff-view:hover{
+            background-color: #f2f2f2;
+        }
+        .well{
+            padding: 10px 0px;            
+            background-color: #F5F5F5;
+            border: 1px solid #E3E3E3;
+            border-radius: 4px;
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;            
+        }        
+    </style>
+</head>
+<body style="font-family: sans-serif;"> 
+    <div style="width: 100%; background-color: white; position: fixed; top: 0px; left: 0px; padding-left: 10px; border-bottom: 1px solid gray;">
+        <h1>{{event.event_code}} {{event.event_subcode}}</h1>  
+        <ul class="well" style="max-width: 350px; height: 50px; list-style-type:none; overflow:scroll;">
+            {% for update in revised %}
+                <li style="margin-bottom:2px;">
+                    <a href="#{{update.id}}" style="padding:5px;">
+                        {{ update.update.timestamp|date:"D d M Y"}} {{update.update.timestamp|date:"P"}}
+                    </a>
+                </li>              
+            {% endfor %}               
+        </ul>              
+    </div>
+    <div style="width: 100%; margin: auto; margin-top: 80px; margin-bottom: 500px; padding: 10px;">
+       {% for update in revised %}
+       <div id="{{update.id}}" class="diff-view" style="width: 600px; margin-bottom: 15px; border-top:5px solid #dedede; padding-top:160px">
+            <table style="width:100%;">
+                <tr>
+                    <td>
+                        <h2 style="">                             
+                            {{ update.update.timestamp|date:"D d M Y"}} {{update.update.timestamp|date:"P"}}               
+                            {% if update.status == 1 %}
+                                <small style="font-style:italic; margin-left: 10px;">new event</small>
+                            {% else %}
+                                <small style="font-style:italic; margin-left: 10px;">{{update.count}}</small>
+                            {% endif %}
+                        </h2>                                                
+                    </td>
+                    <td style="text-align:right; padding-right:10px;">
+                        <form action="{% url "revisions_update" update=update.update.id %}#{{event.event_code}}" method="get"><button>view this update</button></form>
+                    </td>
+                </tr>
+            </table>
+            <div style="font:14px/1.5 'Open Sans',sans-serif; font-weight:375;">{{update.diff_html|safe}}</div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

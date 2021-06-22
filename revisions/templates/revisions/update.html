@@ -1,0 +1,73 @@
+{% load url from future %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Changes To Event Notes</title>
+    <style type="text/css">
+        .diff-view:hover{
+             background-color: #f2f2f2;
+        }
+        .well{
+            padding: 10px 0px;            
+            background-color: #F5F5F5;
+            border: 1px solid #E3E3E3;
+            border-radius: 4px;
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;            
+        }
+    </style>
+</head>
+<body style="font-family: sans-serif;"> 
+<!--     <a href="#" onclick="history.go(-1);return false;">[Go Back]</a> -->
+    
+    <div style="width: 100%; background-color: white; position: fixed; top: 0px; left: 0px; padding-left: 10px; border-bottom: 1px solid gray;">
+    <table style="text-align:left; width: 100%;">
+        <tr>
+            <th style="width:125px;">date</th>
+            <th style="width:200px;">{{ date_of_update|date:"D d M Y"}}</th>
+            <th style="text-align:right; padding-right:10px;"><form action="{% url "revision_day" year=date_of_update.year month=date_of_update|date:"M" day=date_of_update.day %}" method="get"><button>back</button></form></th>
+        </tr>
+        <tr>
+            <th style="width:125px;">time</th>
+            <th style="width:200px;">{{date_of_update|date:"P"}}</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th style="width:125px;">events changed</th>
+            <th style="width:200px;">{{updates.count}}</th>
+            <th></th>
+        </tr>
+    </table>
+    <ul class="well" style="max-width: 350px; height: 90px; list-style-type:none; overflow:scroll;">
+        {% for update in updates %}
+            <li style="margin-bottom:2px;">
+                <a href="#{{update.event.event_code}}" style="padding:5px;">
+                    {{update.event.event_code}} {{update.event.event_subcode}}
+                </a>
+            </li>              
+        {% endfor %}               
+    </ul>
+    </div>
+    <!-- <ins style="background:#e6ffe6"></ins> -->
+    <!-- <del style="background:#ffe6e6"></del> -->
+    <div id="top"><a name="top"></a></div>
+    <div style="margin-bottom:500px;">
+       {% for update in updates %}
+       <div id="{{update.event.event_code}}" class="diff-view" style="width: 600px;  margin-bottom: 15px; border-top:5px solid #dedede;">
+            <h2 style="padding-top:200px;  display: inline-block;">
+                <a name="{{update.event.event_code}}"></a>
+                <a href="#top" style="padding: 5px;">^</a>
+                <a href="{% url "revisions_eventhistory" event_id=update.event.id %}#{{update.id}}">{{update.event.event_code}} {{update.event.event_subcode}}
+                {% if update.status == 1 %}
+                    <small style="font-style:italic; margin-left: 10px; text-decoration:none;">new event</small>
+                {% else %}
+                    <small style="font-style:italic; margin-left: 10px; text-decoration:none;">{{update.count}}</small>
+                {% endif %}
+                </a>
+            </h2>
+            <div style="font:14px/1.5 'Open Sans',sans-serif; font-weight:375;">{{update.diff_html|safe}}</div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

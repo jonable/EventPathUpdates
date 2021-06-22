@@ -1,0 +1,46 @@
+{% load url from future %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{herp}}Changes To Event Notes</title>
+</head>
+<body style="width:100%; font-family: 'Open Sans', sans-serif;">  
+    
+    <div id="top"><a name="top"></a></div>
+   
+    <h3>{{ date_of_update|date:"D d M Y"}}</h3>
+    <h3>run at: {{date_of_update|date:"P"}}</h3>
+    <h3>changes: {{updates.count}}</h3>
+    <h3>events with in following dates searched: {{date_range.start_date|date:"m/d/Y"}} - {{date_range.end_date|date:"m/d/Y"}}</h3>
+    
+
+    <ul style="list-style-type:none; padding: 0px">
+        {% for update in updates %}
+            <li style="margin-bottom:2px;">
+                <a href="#{{update.event.event_code}}" style="padding:5px;">
+                    {{update.event.event_code}} {{update.event.event_subcode}}
+                </a>
+            </li>              
+        {% endfor %}               
+    </ul>
+    <!-- <ins style="background:#e6ffe6"></ins> -->
+    <!-- <del style="background:#ffe6e6"></del> -->
+    <div style="width: 100%; margin: auto; padding-left: 10px; padding: 10px;">
+       {% for update in updates %}
+       <div>
+            <h2 id="{{update.event.event_code}}" style="border-top:1px solid #dedede;">
+                <a name="{{update.event.event_code}}"></a><a href="#top" style="padding: 5px;">^</a>
+                {{update.event.event_code}} {{update.event.event_subcode}}
+                {% if update.status == 1 %}
+                    <small style="font-style:italic; margin-left: 10px;">new event</small>
+                {% else %}
+                    <small style="font-style:italic; margin-left: 10px; text-decoration:none;">{{update.count}} changes</small>
+                {% endif %}
+            </h2>
+            <div style="font:14px/1.5 'Open Sans',sans-serif; font-weight:375; max-width:600px">{{update.diff_html|safe}}</div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

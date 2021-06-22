@@ -1,0 +1,99 @@
+{% load url from future %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Changes To Event Notes</title>
+	
+    <style type="text/css">
+        .diff-view:hover{
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body style="font-family: sans-serif;"> 
+<h1>REVISIONS</h1>
+<div style="width:40%; float:left;">
+<ul style="list-style:none; padding:0px">
+ {% for y in menu.years %}		
+	{% if y.is_active  %}	
+	<li>{{y.year}}
+		<ul>
+		{% for m in y.months %}
+			{% if m.is_active  %}		
+			<li>{{m.month}}
+				<ul>
+					{% for d in m.days %}
+						<li>
+							<a href="{% url "revision_day" year=y.year month=m.month day=d.day %}">{{m.month}} {{d.day}}, {{y.year}}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</li>
+			{% else %}
+			<li>
+				<a href="{% url "revisions_menu" year=y.year month=m.month %}">{{m.month}}</a></li>
+			{% endif %}
+		{% endfor %}
+		</ul>
+	</li>
+	{% else %}
+	<li>
+		<a href="{% url "revisions_menu" year=y.year %}">{{y.year}}</a></li>
+	{% endif %}
+ {% endfor %}
+</ul>
+</div>
+<div style="width:40%; float:left;">
+	<label for="ajax_search">search for events</label>
+	<input type="text" id="ajax_search" placeholder="search"/>
+	<div id="ajax_search_results"></div>
+</div>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript">
+	var $results = $('#ajax_search_results');
+	var url = '/revision/event/'
+	function ParseSearchResults(results){
+		$results.empty();
+		$ul = $('<ul></ul>');
+		$ul.css({
+			'list-style': 'none',
+			'padding': 0
+		})
+		if(!results['search_results']){
+			$results.html($('<p>nothing found</p>'));
+			return None;
+		}
+		$.each(results['search_results'], function(k, v){
+			console.log(v)
+			$li = $('<li><a href="'+url+v["id"]+'">'+v["event_code"]+' '+v["event_subcode"]+'</a></li>');			
+			$ul.append($li);
+		});
+		$results.html($ul)
+	}
+
+	$('#ajax_search').on('keyup', function() {
+	   	var $this = $(this)
+       
+        clearTimeout($this.data('timer'));
+       
+        var search = this.value;
+       
+        if (search.length >= 3) {
+            $this.data('timer', setTimeout(function() {
+               
+                $.ajax({
+                    type: "POST",
+                    url: "{% url "revisions_ajax_search" %}",
+                    data: {
+                        'query': search
+                    },
+                    dataType: 'json'
+                }).done(ParseSearchResults);
+
+            }, 1000));
+        }
+    });
+</script>            
+</body>
+</html>

@@ -1,0 +1,47 @@
+{% load url from future %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Changes To Event Notes</title>
+    <style type="text/css">
+		td, th{
+			padding: 5px 5px;
+		}
+		table{
+			border-collapse: collapse;
+		}
+		tbody tr:hover{
+			background-color: #eaeaea;
+			border: 0px solid gray: ;
+		}
+    </style>
+</head>
+<body style="width:100%; font-family: 'Open Sans', sans-serif;">  
+
+<h1>Events Revised For {{todays_date}}</h1>
+<div style="width: 50%;">
+<table style="text-align:left" border="0">
+	<thead>
+	<tr style="text-align:left">
+		<th>Event</th>
+		<th>Subcode</th>
+		<th>Changed Today</th>
+		<th></th>
+	</tr>
+	</thead>
+	<tbody>
+	{% for event in events %}
+	<tr>
+		<td>{{event.event_code}}</td>
+		<td>{{event.event_subcode}}</td>
+		<td style="text-align:right;">{{event.count}}</td>
+		<td><a href="{% url 'revisions_eventhistory' event_id=event.id %}#{{event.update_id}}">view revisions</a></td>
+	</tr>
+	{% endfor %}
+	<tbody>
+</table>
+</div>
+
+</body>
+</html>

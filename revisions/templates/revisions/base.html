@@ -1,0 +1,42 @@
+{% load url from future %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{herp}}Changes To Event Notes</title>
+</head>
+<body style="width:100%; font-family: 'Open Sans', sans-serif;">  
+    
+    <div id="top"><a name="top"></a></div>
+   
+    <h3>updates for {timestamp:%A %B %d, %Y}</h3>
+    <h3>run at: {timestamp:%H:%M %p}</h3>
+    <h3>changes: {{updates.count}}</h3>
+
+    <ul style="list-style-type:none; padding: 0px">
+        {% for update in updates %}
+            <li style="margin-bottom:2px;">
+                <a href="#{{update.event_code}}" style="padding:5px;">
+                    {{update.event_code}} {{update.event_subcode}}
+                </a>
+            </li>              
+        {% endfor %}               
+    </ul>
+    <!-- <ins style="background:#e6ffe6"></ins> -->
+    <!-- <del style="background:#ffe6e6"></del> -->
+    <div style="width: 80%; margin: auto; background-color: #dedede\; padding: 10px;">
+       {% for update in updates %}
+       <div>
+            <h2 id="{{update.event_code}}" style="border-top:1px solid #dedede;">
+                <a name="{{update.event_code}}"></a><a href="#top" style="padding: 5px;">^</a>
+                {{update.event_code}} {{update.event_subcode}}
+                {% if update.status == 1 %}
+                    <small style="font-style:italic; margin-left: 10px;">new event</small>
+                {% endif %}
+            </h2>
+            <div>{{update.diff_html}}</div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
